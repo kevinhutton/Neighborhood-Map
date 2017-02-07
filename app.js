@@ -10,9 +10,7 @@ function initMap() {
   console.log("Intialize Google Map")
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 37.640759, lng: -121.882039},
-    zoom: 8,
-    zoomControl: true,
-    Labels: false,
+    zoom: 12,
     styles: [
     {
       "featureType": "poi",
@@ -24,13 +22,11 @@ function initMap() {
   });
   return map;
 
-
 }
 
 // Create New Google Map Marker
 
 function newMarker(latitude,longitude,map) {
-    console.log("Add New Marker on Map");
     var newMarkerCoordinates = {lat: latitude, lng: longitude};
     var marker = new google.maps.Marker({
           position: newMarkerCoordinates,
@@ -39,30 +35,23 @@ function newMarker(latitude,longitude,map) {
     return marker;
 }
 
-
-function setMapCenter(latitude,longitude,map) {
-    console.log("Changing center of map");
-    var newMarkerCoordinates = {lat: latitude, lng: longitude};
-    map.setCenter(newMarkerCoordinates)
-}
-
 function clearMarkers(map) {
 
   for (var i = 0; i < mapMarkers.length; i++) {
           mapMarkers[i].setMap(null);
   }
 
-
 }
 
 
 // Knockout.js Model
 
-function Place(name,latitude,longitude,marker){
+function Place(name,latitude,longitude,address,marker){
   var self = this;
   self.name = name;
   self.latitude = latitude;
   self.longitude = longitude;
+  self.address = address;
   self.marker = marker;
 }
 
@@ -75,22 +64,23 @@ function PlaceViewModel(){
   self.currentPlace = ko.observable("");
   self.places = ko.observableArray([]);
 
-  // The current item will be passed as the first parameter, so we know which place to remove
 
-  self.showInformation = function(place) {
+  self.displayPlaceInformation = function(place) {
+
     self.currentPlace(place) ;
+    self.currentPlace().marker.setIcon('https://www.google.com/mapfiles/marker_green.png');
     self.map.setCenter(place.marker.getPosition());
-    place.marker.setAnimation(google.maps.Animation.BOUNCE);
     new google.maps.event.trigger( place.marker, 'click' );
 
   }
 
-  self.addPlace = function (data) {
+  self.retrievePlaces = function (data) {
 
 
     var placeName = data.searchTerm();
     clearMarkers(self.map)
     self.places([]);
+    self.map.setZoom(12);
     console.log("Gather nearby places USING HERE Places API ")
     $.ajax({
       url: 'https://places.demo.api.here.com/places/v1/discover/search',
@@ -105,38 +95,40 @@ function PlaceViewModel(){
         xhr.setRequestHeader('Accept', 'application/json');
       },
       success: function (data) {
-        var places = data.results.items ;
-        for (i in places) {
-          var name = places[i].title;
-          var latitude = places[i].position[0];
-          var longitude = places[i].position[1];
-
-          console.log("Add New Marker on Map");
+        var results = data.results.items ;
+        for (i in results) {
+          var name = results[i].title;
+          var latitude = results[i].position[0];
+          var longitude = results[i].position[1];
+          var address = results[i].vicinity;
           var newMarkerCoordinates = {lat: latitude, lng: longitude};
           var newMarker = new google.maps.Marker({
                 position: newMarkerCoordinates,
                 map: map,
                 clickable: true,
-
           });
           newMarker.setAnimation(google.maps.Animation.BOUNCE);
-          var infowindow = new google.maps.InfoWindow();
-          google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude) {
+          var infowindow = new google.maps.InfoWindow()
+          google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude,address) {
           return function() {
-            console.log("Click event triggered on marker");
-            var htmlContent = "<p>Name: " + name + "</br>" + "Latitude:" + latitude + "</br>" + "Longitude" + longitude;
+            var htmlContent ="<div class=\"infowindowcontent\"><p></br>Name:</br>" + name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address</br>"
+             + address + "</br></div>"
             infowindow.setContent(htmlContent);
             infowindow.open(map,newMarker,latitude,longitude);
+            newMarker.setIcon('https://www.google.com/mapfiles/marker_green.png');
           };
 
-          })(newMarker,name,latitude,longitude));
+          })(newMarker,name,latitude,longitude,address));
 
           mapMarkers.push(newMarker);
-          self.places.push(new Place(name,latitude,longitude,newMarker));
-
+          self.places.push(new Place(name,latitude,longitude,address,newMarker));
 
          }
 
+      },
+      error: function(data) {
+
+        alert("Error: Unable to find local places using HERE API");
 
       }
     });
@@ -145,7 +137,7 @@ function PlaceViewModel(){
 
 
 }
-console.log
+
 // Enable Knockout.js engine
 ko.applyBindings(new PlaceViewModel())
 });

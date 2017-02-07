@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Gas Station Finder</title>
-    <meta name="viewport" content="initial-scale=1.0">
+    <title>Bay Area Place Finder</title>
+    <meta name="viewport"  content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel=stylesheet type=text/css href="style.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdWpVqnz0Xxc9gwCEDb4QWIhqwP5RMiwo"></script>
-
   </head>
   <body>
-
-        <div class="search-bar">
-          <h1> Search for Places: </h1>
-          <input id="search-box" data-bind="textInput: searchTerm , event: {focusout: addPlace}"/>
-        </div>
-        <div id="map"></div>
-        <div class="places">
-          <h1> Places </h1>
-          <ul id="results" data-bind="foreach: places">
-            <li class="place" id="place" data-bind="text: name , click: $parent.showInformation"></li>
-          </ul>
-        </div>
-        <div class="information">
-        <h1>Additional Information</h1>
-        <p>Name: <strong data-bind="text: currentPlace().name"></strong></p>
-        <p>Latitude: <strong data-bind="text: currentPlace().latitude"></strong></p>
-        <p>Longitude: <strong data-bind="text: currentPlace().longitude"></strong></p>
-        </div>
+          <div class="title-bar">
+          <h1>Bay Area Place Finder</h1>
+          </div>
+          <div class="search-bar">
+            <b><label>Find Places:</label></b>
+            <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchTerm , event: {focusout: retrievePlaces}""/>
+          </div>
+          <div id="map"></div>
+          <div class="places">
+            <h1> Places </h1>
+            <ul id="results" data-bind="foreach: places">
+              <li class="place" id="place" data-bind="text: name , click: $parent.displayPlaceInformation"></li>
+            </ul>
+          </div>
 
         <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="knockout-3.4.1.js"></script>
         <script src="app.js"></script>
-
 
   </body>
 </html>
