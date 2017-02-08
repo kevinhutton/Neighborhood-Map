@@ -93,7 +93,7 @@ $(document).ready(function() {
 
         var self = this;
         self.map = initMap();
-        self.searchTerm = ko.observable("");
+        self.searchCriteria = ko.observable("");
         self.currentPlace = ko.observable("");
         self.places = ko.observableArray([]);
 
@@ -117,7 +117,7 @@ $(document).ready(function() {
             self.places([]);
             self.map.setZoom(10);
 
-            var placeName = data.searchTerm();
+            var placeName = data.searchCriteria();
             $.ajax({
                 url: 'https://places.demo.api.here.com/places/v1/discover/search',
                 type: 'GET',

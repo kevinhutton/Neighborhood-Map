@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>BerkMap - Berkeley Place Finder</title>
+    <title>BerkMap - The Berkeley Place Finder</title>
     <meta name="viewport"  content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel=stylesheet type=text/css href="css/style.css">
@@ -14,7 +14,7 @@
             </div>
             <div class="search-bar">
               <b><label>Find Places:</label></b>
-              <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchTerm , event: {focusout: retrievePlaces , enter: retrievePlaces}"/>
+              <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchCriteria , event: {focusout: retrievePlaces}"/>
             </div>
             <div id="map"></div>
             <div class="places">
