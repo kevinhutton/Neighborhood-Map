@@ -1,16 +1,18 @@
-
+// Make all external APIS are loaded prior to proceeding
 $(document).ready(function()  {
 
+// Make map and mapMarkers global so that they can be accessed outside of knockout.js
 var map;
 var mapMarkers = [];
 
-//Initiate Google Map
+// Initiate Google Map
+// Set the center to Pleasanton,CA
 
 function initMap() {
   console.log("Intialize Google Map")
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 37.640759, lng: -121.882039},
-    zoom: 12,
+    zoom: 10,
     styles: [
     {
       "featureType": "poi",
@@ -20,6 +22,11 @@ function initMap() {
     }
   ]
   });
+  map.addListener('click', function(map) {
+    unselectMarkers(map);
+
+  });
+
   return map;
 
 }
@@ -40,6 +47,20 @@ function clearMarkers(map) {
   for (var i = 0; i < mapMarkers.length; i++) {
           mapMarkers[i].setMap(null);
   }
+
+}
+function unselectMarkers(map) {
+
+  for (var i = 0; i < mapMarkers.length; i++) {
+          mapMarkers[i].setIcon('https://www.google.com/mapfiles/marker.png');
+  }
+
+
+}
+
+function googleMapsLoadingError() {
+
+alert("Unable to load google maps engine!");
 
 }
 
@@ -109,11 +130,18 @@ function PlaceViewModel(){
           });
           newMarker.setAnimation(google.maps.Animation.BOUNCE);
           var infowindow = new google.maps.InfoWindow()
+          infowindow.maxWidth =  350;
           google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude,address) {
           return function() {
-            var htmlContent ="<div class=\"infowindowcontent\"><p></br>Name:</br>" + name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address</br>"
-             + address + "</br></div>"
+            unselectMarkers(map);
+            var htmlContent =
+            "<p></br>Name:</br>" +
+             name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address:</br>"
+             + address + "</br>"
             infowindow.setContent(htmlContent);
+            google.maps.event.addListener(infowindow,'closeclick',function(){
+              newMarker.setIcon('https://www.google.com/mapfiles/marker_red.png');
+            });
             infowindow.open(map,newMarker,latitude,longitude);
             newMarker.setIcon('https://www.google.com/mapfiles/marker_green.png');
           };

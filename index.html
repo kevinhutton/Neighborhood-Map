@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bay Area Place Finder</title>
+    <title>Bay Map - San Francisco Bay Area Place Finder</title>
     <meta name="viewport"  content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel=stylesheet type=text/css href="style.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdWpVqnz0Xxc9gwCEDb4QWIhqwP5RMiwo"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdWpVqnz0Xxc9gwCEDb4QWIhqwP5RMiwo" onerror="googleMapsLoadingError()"></script>
   </head>
   <body>
-          <div class="title-bar">
-          <h1>Bay Area Place Finder</h1>
-          </div>
-          <div class="search-bar">
-            <b><label>Find Places:</label></b>
-            <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchTerm , event: {focusout: retrievePlaces}""/>
-          </div>
-          <div id="map"></div>
-          <div class="places">
-            <h1> Places </h1>
-            <ul id="results" data-bind="foreach: places">
-              <li class="place" id="place" data-bind="text: name , click: $parent.displayPlaceInformation"></li>
-            </ul>
-          </div>
+          <div class="container">
+            <div class="title-bar">
+            <h1>Bay Map - San Francisco Bay Area Place Finder</h1>
+            </div>
+            <div class="search-bar">
+              <b><label>Find Places:</label></b>
+              <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchTerm , event: {focusout: retrievePlaces , enter: retrievePlaces}"/>
+            </div>
+            <div id="map"></div>
+            <div class="places">
+              <h1> Places </h1>
+              <ul id="results" data-bind="foreach: places">
+                <li class="place" id="place" data-bind="text: name , click: $parent.displayPlaceInformation"></li>
+              </ul>
+            </div>
 
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="knockout-3.4.1.js"></script>
-        <script src="app.js"></script>
+          <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+          <script src="knockout-3.4.1.js"></script>
+          <script src="app.js"></script>
+        </div>
 
   </body>
 </html>
