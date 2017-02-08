@@ -1,12 +1,12 @@
 # Udacity Fullstack Nanodegree Project 6 - Neighborhood Map
 
-The purpose of this project is to create a Neighborhood Map Web application using Knockout.js and Google Maps API
+The purpose of this project is to create a Neighborhood Map Web application using Knockout.js and Google Maps API .
 
-This application will find local places based on the user's search criteria and display their location on a map.
+This application will find local places based on the user's search criteria and display the place location(s) on a map .
 
-The places are found using the HERE Places API(https://developer.here.com/rest-apis/documentation/places/)
+The places are found using the HERE Places API (https://developer.here.com/rest-apis/documentation/places/)
 
-The map is displayed using the Google Maps API(https://developers.google.com/maps/documentation/javascript/)
+The map is displayed using the Google Maps API (https://developers.google.com/maps/documentation/javascript/)
 
 This application demonstrates the following tools/technologies:
 
@@ -26,7 +26,6 @@ This project was done as part of the Udacity Fullstack Nanodegree program
 1. Modern Web Browser (Chrome/Safari) which supports HTML5 and Javascript
 
 
-
 ###How to Run Project
 
 1. Retrieve workspace: <br> ``` git clone https://github.com/kevinhutton/Udacity-Fullstack-Nanodegree-Project6.git ```
@@ -38,3 +37,4 @@ This project was done as part of the Udacity Fullstack Nanodegree program
 3. Retrieve workspace: <br> ``` git clone https://github.com/kevinhutton/Udacity-Fullstack-Nanodegree-Project6.git ``
 4. Add Google Maps API Credentials to Udacity-Fullstack-Nanodegree-Project6/index.html
 5. Add Here Places API Credentials to Udacity-Fullstack-Nanodegree-Project6/js/app.js
+6. Open Udacity-Fullstack-Nanodegree-Project6/index.html in your web browser
