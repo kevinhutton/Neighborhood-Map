@@ -112,6 +112,7 @@ $(document).ready(function() {
         // Add places to ModelView
         self.retrievePlaces = function(data) {
 
+            console.log("Gathering local places using HERE API");
             //Clear current places and markers
             clearMarkers(self.map);
             self.places([]);
@@ -199,7 +200,6 @@ $(document).ready(function() {
         // Set default places , call function immediately
         self.setDefaultPlaces = function() {
 
-            console.log("This gets called");
             self.addPlace("Chez Panisse", 37.87954, -122.26916, "1517 Shattuck Ave Berkeley, CA 94709");
             self.addPlace("Barney's Gourmet Hamburgers", 37.89108, -122.28487, "1591 Solano Ave Berkeley, CA 94707");
             self.addPlace("Greek Theater", 37.874073, -122.25554, "2001 Gayley Rd Berkeley, CA 94720");
