@@ -41,6 +41,7 @@ function newMarker(latitude,longitude,map) {
     return marker;
 }
 
+// Clear all current markers on the map
 function clearMarkers(map) {
 
   for (var i = 0; i < mapMarkers.length; i++) {
@@ -48,6 +49,8 @@ function clearMarkers(map) {
   }
 
 }
+
+// Unselect all current markers , close open infowindow(s)
 function unselectMarkers(map) {
 
   for (var i = 0; i < mapMarkers.length; i++) {
@@ -58,6 +61,7 @@ function unselectMarkers(map) {
 
 }
 
+// Display pop up if google maps fails to load
 function googleMapsLoadingError() {
 
 alert("Unable to load google maps engine!");
@@ -76,14 +80,17 @@ function Place(name,latitude,longitude,address,marker){
   self.marker = marker;
 }
 
-// Knockout.js ModelView(Controller)
+// Knockout.js ModelView
 
 function PlaceViewModel(){
+
   var self = this;
   self.map = initMap();
   self.searchTerm = ko.observable("");
   self.currentPlace = ko.observable("");
   self.places = ko.observableArray([]);
+
+  //Display infowindow , turn marker color to green , center map on Place coordinates
 
   self.displayPlaceInformation = function(place) {
 
@@ -94,14 +101,16 @@ function PlaceViewModel(){
 
   }
 
+  // Find local places using HERE API  based on customer search term
+  // Add places to ModelView
   self.retrievePlaces = function (data) {
 
-
-    var placeName = data.searchTerm();
+    //Clear current places and markers
     clearMarkers(self.map)
     self.places([]);
-    self.map.setZoom(12);
-    console.log("Gather nearby places USING HERE Places API ")
+    self.map.setZoom(10);
+
+    var placeName = data.searchTerm();
     $.ajax({
       url: 'https://places.demo.api.here.com/places/v1/discover/search',
       type: 'GET',
@@ -123,7 +132,7 @@ function PlaceViewModel(){
           var address = results[i].vicinity;
           self.addPlace(name,latitude,longitude,address);
 
-         }
+        }
 
       },
       error: function(data) {
@@ -133,24 +142,27 @@ function PlaceViewModel(){
       }
     });
 
-
-
-
   }
 
-  //Add a new place to the map
+  // Add a new place to the map
 
   self.addPlace = function(name,latitude,longitude,address) {
 
+  // Create google maps marker
   var newMarkerCoordinates = {lat: latitude, lng: longitude};
   var newMarker = new google.maps.Marker({
         position: newMarkerCoordinates,
         map: map,
+        animation: google.maps.Animation.BOUNCE,
         clickable: true,
   });
-  newMarker.setAnimation(google.maps.Animation.BOUNCE);
+
+
+  // Create Infowindow
   newMarker.infowindow = new google.maps.InfoWindow()
   newMarker.infowindow.maxWidth =  350;
+
+  // Display Infowindow on marker click , and change marker color to green
   google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude,address) {
     return function()
      {
@@ -169,6 +181,7 @@ function PlaceViewModel(){
 
   })(newMarker,name,latitude,longitude,address));
 
+  // Add new marker to map and model
   mapMarkers.push(newMarker);
   self.places.push(new Place(name,latitude,longitude,address,newMarker));
 
@@ -184,7 +197,6 @@ function PlaceViewModel(){
     self.addPlace("Amoeba Music",37.86581,-122.25859,"2455 Telegraph Ave Berkeley, CA 94704");
 
   }();
-
 
 }
 
