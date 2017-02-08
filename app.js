@@ -1,17 +1,17 @@
-// Make all external APIS are loaded prior to proceeding
+// Make sure DOM is loaded prior to proceeding
 $(document).ready(function()  {
 
-// Make map and mapMarkers global so that they can be accessed outside of knockout.js
+// Make map and mapMarkers global so that they can be accessed outside of knockout model
 var map;
 var mapMarkers = [];
 
 // Initiate Google Map
-// Set the center to Pleasanton,CA
+// Set the center to Berkeley,CA
 
 function initMap() {
   console.log("Intialize Google Map")
   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 37.640759, lng: -121.882039},
+    center: {lat: 37.87008, lng: -122.26798},
     zoom: 10,
     styles: [
     {
@@ -24,7 +24,6 @@ function initMap() {
   });
   map.addListener('click', function(map) {
     unselectMarkers(map);
-
   });
 
   return map;
@@ -53,6 +52,7 @@ function unselectMarkers(map) {
 
   for (var i = 0; i < mapMarkers.length; i++) {
           mapMarkers[i].setIcon('https://www.google.com/mapfiles/marker.png');
+          mapMarkers[i].infowindow.close();
   }
 
 
@@ -85,7 +85,6 @@ function PlaceViewModel(){
   self.currentPlace = ko.observable("");
   self.places = ko.observableArray([]);
 
-
   self.displayPlaceInformation = function(place) {
 
     self.currentPlace(place) ;
@@ -107,7 +106,7 @@ function PlaceViewModel(){
       url: 'https://places.demo.api.here.com/places/v1/discover/search',
       type: 'GET',
       data: {
-        at: '37.640759,-121.882039',
+        at: '37.87008,-122.26798',
         q: placeName,
         app_id: 'XMbDU0K64PNaYcceIteX',
         app_code: 'YXDek3vsGBTtvxC8dJUqBQ'
@@ -122,34 +121,7 @@ function PlaceViewModel(){
           var latitude = results[i].position[0];
           var longitude = results[i].position[1];
           var address = results[i].vicinity;
-          var newMarkerCoordinates = {lat: latitude, lng: longitude};
-          var newMarker = new google.maps.Marker({
-                position: newMarkerCoordinates,
-                map: map,
-                clickable: true,
-          });
-          newMarker.setAnimation(google.maps.Animation.BOUNCE);
-          var infowindow = new google.maps.InfoWindow()
-          infowindow.maxWidth =  350;
-          google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude,address) {
-          return function() {
-            unselectMarkers(map);
-            var htmlContent =
-            "<p></br>Name:</br>" +
-             name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address:</br>"
-             + address + "</br>"
-            infowindow.setContent(htmlContent);
-            google.maps.event.addListener(infowindow,'closeclick',function(){
-              newMarker.setIcon('https://www.google.com/mapfiles/marker_red.png');
-            });
-            infowindow.open(map,newMarker,latitude,longitude);
-            newMarker.setIcon('https://www.google.com/mapfiles/marker_green.png');
-          };
-
-          })(newMarker,name,latitude,longitude,address));
-
-          mapMarkers.push(newMarker);
-          self.places.push(new Place(name,latitude,longitude,address,newMarker));
+          self.addPlace(name,latitude,longitude,address);
 
          }
 
@@ -161,11 +133,63 @@ function PlaceViewModel(){
       }
     });
 
+
+
+
   }
+
+  //Add a new place to the map
+
+  self.addPlace = function(name,latitude,longitude,address) {
+
+  var newMarkerCoordinates = {lat: latitude, lng: longitude};
+  var newMarker = new google.maps.Marker({
+        position: newMarkerCoordinates,
+        map: map,
+        clickable: true,
+  });
+  newMarker.setAnimation(google.maps.Animation.BOUNCE);
+  newMarker.infowindow = new google.maps.InfoWindow()
+  newMarker.infowindow.maxWidth =  350;
+  google.maps.event.addListener(newMarker, 'click', (function(newMarker,name,latitude,longitude,address) {
+    return function()
+     {
+        unselectMarkers(map);
+        var htmlContent =
+        "<p></br>Name:</br>" +
+         name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address:</br>"
+         + address + "</br>"
+        newMarker.infowindow.setContent(htmlContent);
+        google.maps.event.addListener(newMarker.infowindow,'closeclick',function(){
+          newMarker.setIcon('https://www.google.com/mapfiles/marker.png');
+        });
+        newMarker.infowindow.open(map,newMarker,latitude,longitude);
+        newMarker.setIcon('https://www.google.com/mapfiles/marker_green.png');
+      };
+
+  })(newMarker,name,latitude,longitude,address));
+
+  mapMarkers.push(newMarker);
+  self.places.push(new Place(name,latitude,longitude,address,newMarker));
+
+  }
+
+  // Set default places , call function immediately
+  self.setDefaultPlaces = function() {
+    console.log("This gets called");
+    self.addPlace("Chez Panisse",37.87954,-122.26916,"1517 Shattuck Ave Berkeley, CA 94709");
+    self.addPlace("Barney's Gourmet Hamburgers",37.89108,-122.28487,"1591 Solano Ave Berkeley, CA 94707");
+    self.addPlace("Greek Theater",37.874073,-122.25554,"2001 Gayley Rd Berkeley, CA 94720");
+    self.addPlace("University of California-Berkeley",37.86948,-122.25929,"101 Sproul Hall Berkeley, CA 94720");
+    self.addPlace("Amoeba Music",37.86581,-122.25859,"2455 Telegraph Ave Berkeley, CA 94704");
+
+  }();
 
 
 }
 
-// Enable Knockout.js engine
-ko.applyBindings(new PlaceViewModel())
+// Start Knockout.js engine
+
+ko.applyBindings(new PlaceViewModel());
 });
+
