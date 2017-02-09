@@ -1,5 +1,4 @@
 // Make sure DOM is loaded prior to proceeding
-$(document).ready(function() {
 
     // Make map and mapMarkers global so that they can be accessed outside of knockout model
     var map;
@@ -8,7 +7,7 @@ $(document).ready(function() {
     // Initiate Google Map
     // Set the center to Berkeley,CA
 
-    function initMap() {
+    function startApp() {
 
         console.log("Intialize Google Map")
         map = new google.maps.Map(document.getElementById('map'), {
@@ -28,7 +27,8 @@ $(document).ready(function() {
             unselectMarkers(map);
         });
 
-        return map;
+        this.map = map;
+        ko.applyBindings(new PlaceViewModel());
 
     }
 
@@ -92,7 +92,6 @@ $(document).ready(function() {
     function PlaceViewModel() {
 
         var self = this;
-        self.map = initMap();
         self.searchCriteria = ko.observable("");
         self.currentPlace = ko.observable("");
         self.places = ko.observableArray([]);
@@ -103,7 +102,7 @@ $(document).ready(function() {
 
             self.currentPlace(place);
             self.currentPlace().marker.setIcon('https://www.google.com/mapfiles/marker_green.png');
-            self.map.setCenter(place.marker.getPosition());
+            map.setCenter(place.marker.getPosition());
             new google.maps.event.trigger(place.marker, 'click');
 
         }
@@ -114,9 +113,9 @@ $(document).ready(function() {
 
             console.log("Gathering local places using HERE API");
             //Clear current places and markers
-            clearMarkers(self.map);
+            clearMarkers(map);
             self.places([]);
-            self.map.setZoom(10);
+            map.setZoom(10);
 
             var placeName = data.searchCriteria();
             $.ajax({
@@ -212,5 +211,3 @@ $(document).ready(function() {
 
     // Start Knockout.js engine
 
-    ko.applyBindings(new PlaceViewModel());
-});

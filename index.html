@@ -5,7 +5,10 @@
     <meta name="viewport"  content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel=stylesheet type=text/css href="css/style.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdWpVqnz0Xxc9gwCEDb4QWIhqwP5RMiwo" onerror="googleMapsLoadingError()"></script>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/knockout-3.4.1.js"></script>
+    <script src="js/app.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdWpVqnz0Xxc9gwCEDb4QWIhqwP5RMiwo&callback=startApp" async defer onerror="googleMapsLoadingError()"></script>
   </head>
   <body>
           <div class="container">
@@ -23,9 +26,6 @@
                 <li class="place" id="place" data-bind="text: name , click: $parent.displayPlaceInformation"></li>
               </ul>
             </div>
-          <script src="js/jquery-1.11.3.min.js"></script>
-          <script src="js/knockout-3.4.1.js"></script>
-          <script src="js/app.js"></script>
         </div>
 
   </body>
