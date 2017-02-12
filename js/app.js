@@ -1,4 +1,4 @@
-// Make sure DOM is loaded prior to proceeding
+
 
     // Make map and mapMarkers global so that they can be accessed outside of knockout model
     var map;
@@ -47,15 +47,6 @@
         return marker;
     }
 
-    // Clear all current markers on the map
-    function clearMarkers(map) {
-
-        for (var i = 0; i < mapMarkers.length; i++) {
-            mapMarkers[i].setMap(null);
-        }
-
-    }
-
     // Unselect all current markers , close open infowindow(s)
     function unselectMarkers(map) {
 
@@ -63,15 +54,11 @@
             mapMarkers[i].setIcon('https://www.google.com/mapfiles/marker.png');
             mapMarkers[i].infowindow.close();
         }
-
-
     }
 
     // Display pop up if google maps fails to load
     function googleMapsLoadingError() {
-
         alert("Unable to load google maps engine!");
-
     }
 
 
@@ -95,6 +82,28 @@
         self.searchCriteria = ko.observable("");
         self.currentPlace = ko.observable("");
         self.places = ko.observableArray([]);
+        self.filteredPlaces = ko.computed(function() {
+            var filter = this.searchCriteria().toLowerCase();
+            if (!filter.trim())
+            {
+                // Make sure all markers are visible
+                ko.utils.arrayFilter(this.places(), function(place) {
+                    place.marker.setVisible(true);
+                });
+                return this.places();
+            }
+            else
+            {
+                return ko.utils.arrayFilter(this.places(), function(place) {
+                    place.marker.setVisible(false);
+                    if (place.name.toLowerCase().includes(filter)) {
+                        place.marker.setVisible(true);
+                        return place;
+                    }
+
+                });
+            }
+        }, self);
 
         //Display infowindow , turn marker color to green , center map on Place coordinates
 
@@ -103,51 +112,7 @@
             self.currentPlace(place);
             self.currentPlace().marker.setIcon('https://www.google.com/mapfiles/marker_green.png');
             map.setCenter(place.marker.getPosition());
-            new google.maps.event.trigger(place.marker, 'click');
-
-        }
-
-        // Find local places using HERE API  based on customer search term
-        // Add places to ModelView
-        self.retrievePlaces = function(data) {
-
-            console.log("Gathering local places using HERE API");
-            //Clear current places and markers
-            clearMarkers(map);
-            self.places([]);
-            map.setZoom(10);
-
-            var placeName = data.searchCriteria();
-            $.ajax({
-                url: 'https://places.demo.api.here.com/places/v1/discover/search',
-                type: 'GET',
-                data: {
-                    at: '37.87008,-122.26798',
-                    q: placeName,
-                    app_id: 'XMbDU0K64PNaYcceIteX',
-                    app_code: 'YXDek3vsGBTtvxC8dJUqBQ'
-                },
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('Accept', 'application/json');
-                },
-                success: function(data) {
-                    var results = data.results.items;
-                    for (i in results) {
-                        var name = results[i].title;
-                        var latitude = results[i].position[0];
-                        var longitude = results[i].position[1];
-                        var address = results[i].vicinity;
-                        self.addPlace(name, latitude, longitude, address);
-
-                    }
-
-                },
-                error: function(data) {
-
-                    alert("Error: Unable to find local places using HERE API");
-
-                }
-            });
+            google.maps.event.trigger(place.marker, 'click');
 
         }
 
@@ -170,22 +135,57 @@
 
             // Create Infowindow
             newMarker.infowindow = new google.maps.InfoWindow() ;
-            newMarker.infowindow.maxWidth = 350;
+
 
             // Display Infowindow on marker click , and change marker color to green
             google.maps.event.addListener(newMarker, 'click', (function(newMarker, name, latitude, longitude, address) {
                 return function() {
                     unselectMarkers(map);
+
+                    console.log(weatherInfoHTML);
                     var htmlContent =
                         "<p></br>Name:</br>" +
                         name + "</br>Latitude:</br>" + latitude + "</br>Longitude:</br>" + longitude + "</br>Address:</br>" +
-                        address + "</br>"
+                        address;
                     newMarker.infowindow.setContent(htmlContent);
                     google.maps.event.addListener(newMarker.infowindow, 'closeclick', function() {
                         newMarker.setIcon('https://www.google.com/mapfiles/marker.png');
                     });
                     newMarker.infowindow.open(map, newMarker, latitude, longitude);
                     newMarker.setIcon('https://www.google.com/mapfiles/marker_green.png');
+                    var weatherAPIUrl = "https://crossorigin.me/https://api.darksky.net/forecast/ac53909bbdc6b3c26f9df01c692ce401/" + latitude + "," + longitude ;
+                    var weatherInfoHTML;
+                    req = $.ajax({
+                    url: weatherAPIUrl,
+                    timeout: 0,
+
+
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Accept', 'application/json');
+                    },
+                    complete: function(data) {
+                      console.log("Hello !");
+
+                    },
+                    success: function(data) {
+                        var weatherSummary = data.currently.summary;
+                        var temperature = data.currently.temperature;
+                        weatherInfoHTML = "</br>Current Weather:</br>" + weatherSummary + "</br>Current Temperature:</br>"
+                        + temperature ;
+                        console.log(weatherInfoHTML);
+                        newMarker.infowindow.setContent(newMarker.infowindow.getContent()+ weatherInfoHTML);
+
+
+                    },
+                    error: function(data) {
+
+                        console.log("Error: Unable to find local places using DarkSky API");
+                        weatherInfoHTML = "</br>Current Weather:</br>Unable to determine current weather" +
+                        "</br>Current Temperature:</br>Unable to determine current temperature";
+                        newMarker.infowindow.setContent(newMarker.infowindow.getContent()+ weatherInfoHTML);
+
+                    }
+                    });
                 };
 
             })(newMarker, name, latitude, longitude, address));
@@ -199,11 +199,41 @@
         // Set default places , call function immediately
         self.setDefaultPlaces = function() {
 
-            self.addPlace("Chez Panisse", 37.87954, -122.26916, "1517 Shattuck Ave Berkeley, CA 94709");
-            self.addPlace("Barney's Gourmet Hamburgers", 37.89108, -122.28487, "1591 Solano Ave Berkeley, CA 94707");
-            self.addPlace("Greek Theater", 37.874073, -122.25554, "2001 Gayley Rd Berkeley, CA 94720");
-            self.addPlace("University of California-Berkeley", 37.86948, -122.25929, "101 Sproul Hall Berkeley, CA 94720");
-            self.addPlace("Amoeba Music", 37.86581, -122.25859, "2455 Telegraph Ave Berkeley, CA 94704");
+            $.ajax({
+                url: 'https://places.demo.api.here.com/places/v1/discover/around',
+                type: 'GET',
+                data: {
+                    at: '37.87008,-122.26798;r=10500',
+                    app_id: 'XMbDU0K64PNaYcceIteX',
+                    app_code: 'YXDek3vsGBTtvxC8dJUqBQ',
+                    size: 15,
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Accept', 'application/json');
+                },
+                success: function(data) {
+                    var results = data.results.items;
+                    for (i in results) {
+                        var name = results[i].title;
+                        var latitude = results[i].position[0];
+                        var longitude = results[i].position[1];
+                        var address = results[i].vicinity;
+                        self.addPlace(name, latitude, longitude, address);
+
+                    }
+
+                },
+                error: function(data) {
+
+                    alert("We were unable to find local places using the HERE API , showing some default locations instead");
+                    self.addPlace("Chez Panisse", 37.87954, -122.26916, "1517 Shattuck Ave Berkeley, CA 94709");
+                    self.addPlace("Barney's Gourmet Hamburgers", 37.89108, -122.28487, "1591 Solano Ave Berkeley, CA 94707");
+                    self.addPlace("Greek Theater", 37.874073, -122.25554, "2001 Gayley Rd Berkeley, CA 94720");
+                    self.addPlace("University of California-Berkeley", 37.86948, -122.25929, "101 Sproul Hall Berkeley, CA 94720");
+                    self.addPlace("Amoeba Music", 37.86581, -122.25859, "2455 Telegraph Ave Berkeley, CA 94704");
+
+                }
+            });
 
         }();
 

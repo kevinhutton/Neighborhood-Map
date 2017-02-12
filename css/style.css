@@ -15,20 +15,22 @@ li {
 
  }
 
-
 #map {
  width:  50%;
  min-height: 500px;
  float: left;
 
 }
+.map-error{
 
-.places {
- width: 50%;
+  color: red;
+}
+
+.filtered-places {
+ width: 100%;
  float: right;
  min-height: 500px;
  text-align: center;
-
 
 }
 .search-bar {

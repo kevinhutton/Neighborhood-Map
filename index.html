@@ -17,13 +17,13 @@
             </div>
             <div class="search-bar">
               <b><label>Find Places:</label></b>
-              <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchCriteria , event: {focusout: retrievePlaces}"/>
+              <input id="search-box" , placeholder="<Enter place or category name here>", data-bind="textInput: searchCriteria"/>
             </div>
-            <div id="map"></div>
+            <div id="map"><p class="map-error">Unable to Load Google Maps Engine !</p></div>
             <div class="places">
-              <h1> Places </h1>
-              <ul id="results" data-bind="foreach: places">
-                <li class="place" id="place" data-bind="text: name , click: $parent.displayPlaceInformation"></li>
+              <h1>Places</h1>
+              <ul id="results" data-bind="foreach: filteredPlaces">
+                <li class="place" id="place" data-bind="text: name, click: $parent.displayPlaceInformation"></li>
               </ul>
             </div>
         </div>
