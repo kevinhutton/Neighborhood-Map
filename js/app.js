@@ -14,7 +14,7 @@ function startApp() {
             lat: 37.87008,
             lng: -122.26798
         },
-        zoom: 14,
+        zoom: 15,
         styles: [{
             "featureType": "poi",
             "stylers": [{
@@ -188,7 +188,7 @@ function PlaceViewModel() {
     }
 
     // Set default places , call function immediately
-    // Gather 15 random places around berkeley dynamically using HERE
+    // Gather 20 random places around berkeley dynamically using HERE
     // If HERE API is not available , use default places instead
     self.setDefaultPlaces = function() {
 
@@ -199,7 +199,7 @@ function PlaceViewModel() {
                 at: '37.87008,-122.26798;r=10500',
                 app_id: 'XMbDU0K64PNaYcceIteX',
                 app_code: 'YXDek3vsGBTtvxC8dJUqBQ',
-                size: 15,
+                size: 20,
             },
             beforeSend: function(xhr) {
                 xhr.setRequestHeader('Accept', 'application/json');
