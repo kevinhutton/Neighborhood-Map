@@ -8,6 +8,8 @@ The places are found using the HERE Places API (https://developer.here.com/rest-
 
 The map is displayed using the Google Maps API (https://developers.google.com/maps/documentation/javascript/)
 
+The current weather information is obtained using the Dark Sky weather API (https://darksky.net/dev/)
+
 This application demonstrates the following tools/technologies:
 
   1. Javascript
@@ -16,8 +18,9 @@ This application demonstrates the following tools/technologies:
   5. JQuery
   6. Google Maps API
   7. HERE Places API
-  8. HTML5
-  9. CSS
+  8. Dark Sky Weather API
+  9. HTML5
+  10. CSS
   
 This project was done as part of the Udacity Fullstack Nanodegree program
 
@@ -37,4 +40,5 @@ This project was done as part of the Udacity Fullstack Nanodegree program
 3. Retrieve workspace: <br> ``` git clone https://github.com/kevinhutton/Udacity-Fullstack-Nanodegree-Project6.git ``
 4. Add Google Maps API Credentials to Udacity-Fullstack-Nanodegree-Project6/index.html
 5. Add Here Places API Credentials to Udacity-Fullstack-Nanodegree-Project6/js/app.js
-6. Open Udacity-Fullstack-Nanodegree-Project6/index.html in your web browser
+6. Add Dark Sky weather API Credentials to Udacity-Fullstack-Nanodegree-Project6/js/app.js
+7. Open Udacity-Fullstack-Nanodegree-Project6/index.html in your web browser
